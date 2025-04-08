@@ -27,11 +27,55 @@ print("Welcome to the UW Calculator Playground")
 //: For this latter set of operations, it is safe to assume that `["count"]` (with no additional arguments) is 0, `["avg"]` is also 0, and `["fact"]` is 0. `["1", "fact"]` should return 1, and `["0", "fact"]` should also return 1. (Yes, 0-factorial is 1. True story.)
 //: 
 func calculate(_ args: [String]) -> Int {
-    return -1
+    if args.isEmpty{return 0}
+    
+    let lastArg = args.last!  // get the last argument
+    
+    if Int(lastArg) != nil {  // if the last argument is a number, traditional mode
+        let num1 = Int(args[0])!  // first number
+        let num2 = Int(args[2])!  // second number
+        let op = args[1]  // operator
+        
+        switch op {
+        case "+": return num1 + num2  // addition
+        case "-": return num1 - num2  // subtraction
+        case "*": return num1 * num2  // multiplication
+        case "/": return num1 / num2  // division
+        case "%": return num1 % num2  // mod
+        default: return 0
+        }
+    } else {  // the last argument is an operator, expression mode
+        switch lastArg {
+        case "count": return args.dropLast().count  // count number of all the number arguments
+        case "avg":  // calculate the average value of numbers
+            var sum = 0
+            if args.dropLast().isEmpty {return 0}  // edge case without number argument
+            for num in args.dropLast() {
+                if let value = Int(num) {
+                    sum += value
+                }
+            }
+            return sum / args.dropLast().count
+        case "fact":  // calculate the factorial of the number
+            if let firstNum = Int(args[0]) {
+                if firstNum == 0 || firstNum == 1 {  // edge cases
+                    return 1
+                } else {
+                    var result = 1
+                    for i in 1...firstNum {
+                        result *= i  // base case
+                    }
+                    return result
+                }
+            } else {return 0}
+        default: return 0
+        }
+    }
 }
 
 func calculate(_ arg: String) -> Int {
-    return -1
+    let args: [String] = arg.split(separator: " ").map(String.init)  // split arguments into separate argument
+    return calculate(args)  // reuse and pass args array into calculate(_ args: [String]) -> Int
 }
 
 //: Below this are the test expressions/calls to verify if your code is correct.
@@ -85,7 +129,7 @@ calculate("5 fact") == 120
 //: Implement `calculate([String])` and `calculate(String)` to handle negative numbers. You need only make the tests below pass. (You do not need to worry about "fact"/factorial with negative numbers, for example.)
 //:
 //: This is worth 1 pt
-/*
+
 calculate(["2", "+", "-2"]) == 0
 calculate(["2", "-", "-2"]) == 4
 calculate(["2", "*", "-2"]) == -4
@@ -100,7 +144,7 @@ calculate("2 - -2") == 4
 calculate("-2 / 2") == -1
 
 calculate("1 -2 3 -4 5 count") == 5
-*/
+
  
 //: Implement `calculate([String])` and `calculate(String)` to use 
 //: and return floating-point values. You need only make the tests 
@@ -112,13 +156,49 @@ calculate("1 -2 3 -4 5 count") == 5
 //: Integer-based versions above.
 //: 
 //: This is worth 1 pt
-/*
+
 func calculate(_ args: [String]) -> Double {
-    return -1.0
+    if args.isEmpty{return 0}
+    
+    let lastArg = args.last!  // get the last argument
+    
+    if Double(lastArg) != nil {  // if the last argument is a number, traditional mode
+        let num1 = Double(args[0])!  // first number
+        let num2 = Double(args[2])!  // second number
+        let op = args[1]  // operator
+        
+        switch op {
+        case "+": return num1 + num2  // addition
+        case "-": return num1 - num2  // subtraction
+        case "*": return num1 * num2  // multiplication
+        case "/": return num2 != 0 ? num1 / num2 : 0.0  // division, with edge case. invalid, if dividend is 0
+        case "%": return num2 != 0 ? num1.truncatingRemainder(dividingBy: num2) : 0.0  // mod, with egde case.
+        default: return 0
+        }
+    } else {  // the last argument is an operator, expression mode
+        switch lastArg {
+        case "count": return Double(args.dropLast().count)  // count number of all the number arguments
+        case "avg":  // calculate the average value of numbers
+            var sum: Double = 0
+            if args.dropLast().isEmpty {return 0}  // edge case without number argument
+            for num in args.dropLast() {
+                if let value = Double(num) {
+                    sum += value
+                }
+            }
+            return sum / Double(args.dropLast().count)
+        default: return 0
+        }
+    }
 }
+
+
 func calculate(_ arg: String) -> Double {
-    return -1.0
+    let args = arg.split(separator: " ").map(String.init)
+    return calculate(args)
+    
 }
+
 
 calculate(["2.0", "+", "2.0"]) == 4.0
 calculate([".5", "+", "1.5"]) == 2.0
@@ -127,4 +207,4 @@ calculate(["2.5", "*", "2.5"]) == 6.25
 calculate(["2.0", "/", "2.0"]) == 1.0
 calculate(["2.0", "%", "2.0"]) == 0.0
 calculate("1.0 2.0 3.0 4.0 5.0 count") == 5.0
-*/
+
